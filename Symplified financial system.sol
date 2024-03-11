@@ -22,16 +22,20 @@ contract UserManagement {
     function userExists() public view returns (bool) {
         return bytes(user[msg.sender].name).length > 0;
     }
-    function addUser(string memory name, string memory role) public onlyAdmin{
+    function addUser(address userAddress, string memory name, string memory role) public onlyAdmin{
         require(!userExists(), "User already exists!");
-
-        user[msg.sender] = User(name, role);
+        user[userAddress] = User(name, role);
     }
 
-    function getUser() public view returns (User memory) {
+    function updateUserRole(address userAddress, string memory newRole) public onlyAdmin {
+        require(userExists(), "User does not exist!");
+        user[userAddress].role = newRole;
+    }
+
+    function getUser(address userAddress) public view returns (User memory) {
         require(userExists(), "User does not exist!");
 
-        return user[msg.sender];
+        return user[userAddress];
     }
 }
 
@@ -95,18 +99,18 @@ contract LoanSystem is FinancialOporations{
     }
 
 //Repayments
-    function TotalAmount (uint256 amount, uint256 duration, uint256 interestRate) public pure returns(uint256){
+    function totalAmount (uint256 amount, uint256 duration, uint256 interestRate) public pure returns(uint256){
         uint256 interest = amount * interestRate/10000 * duration ;
         return amount + interest;
     }
 
-    function repayLoan(address payable lender) public payable {
+    function repayLoan() public payable {
         require(loanRQ[msg.sender].approved == true, "Loan has not been approved");
-        uint256 caculate = TotalAmount(loanRQ[msg.sender].amount, loanRQ[msg.sender].interestRate , loanRQ[msg.sender].duration);
+        uint256 caculate = totalAmount(loanRQ[msg.sender].amount, loanRQ[msg.sender].interestRate , loanRQ[msg.sender].duration);
         
         require(msg.value >= caculate, "Payment amount is not enough");
 
-        lender.transfer(caculate);
+        loanRQ[msg.sender].amount -= caculate;
 
         loanRQ[msg.sender].approved = false;
 
