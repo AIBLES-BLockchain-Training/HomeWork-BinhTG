@@ -108,7 +108,7 @@ contract LoanSystem is FinancialOporations{
         require(loanRQ[msg.sender].approved == true, "Loan has not been approved");
         uint256 caculate = totalAmount(loanRQ[msg.sender].amount, loanRQ[msg.sender].interestRate , loanRQ[msg.sender].duration);
         
-        require(msg.value >= caculate, "Payment amount is not enough");
+        require(msg.value = caculate, "Invalid payment");
 
         loanRQ[msg.sender].amount -= caculate;
 
