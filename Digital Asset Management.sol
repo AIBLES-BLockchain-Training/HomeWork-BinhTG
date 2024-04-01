@@ -32,6 +32,9 @@ contract artAsset is abstractAsset{
         require(msg.sender == owner,"Only owner can transfer ownership");
         owner = newOwner;
     }
+    function getInformation() public view returns(string memory, string memory, string memory, address){
+        return (artist, describe, name, owner);
+    }
 }
 contract musicAsset is abstractAsset{
     string author;
@@ -45,6 +48,9 @@ contract musicAsset is abstractAsset{
     function transferOwnership(address newOwner) external override{
         require(msg.sender == owner,"Only owner can transfer ownership");
         owner = newOwner;
+    }
+    function getInformation() public view returns(string memory, string memory, string memory, address){
+        return (author, category, name, owner);
     }
 }
 
@@ -71,6 +77,22 @@ contract assetFactory {
         assetCount++;
         assets[id] = newAsset;
     }
-    
-
+}
+contract getArt{
+    artAsset public getArtAsset;
+    constructor(address _artAssetAddress){
+        getArtAsset = artAsset(_artAssetAddress);
+    }
+    function get() public view returns (string memory, string memory, string memory, address) {
+        return getArtAsset.getInformation();
+    }
+}
+contract getMusic{
+    musicAsset public getMusicAsset;
+    constructor(address _musicAssetAddress){
+        getMusicAsset = musicAsset(_musicAssetAddress);
+    }
+    function get() public view returns (string memory, string memory, string memory, address) {
+        return getMusicAsset.getInformation();
+    }
 }
