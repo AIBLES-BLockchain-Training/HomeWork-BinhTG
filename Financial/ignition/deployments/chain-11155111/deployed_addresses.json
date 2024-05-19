@@ -1,0 +1,6 @@
+{
+  "LoanSystemModule#LoanSystem": "0x2C3A31AbA3B90D4089c57594599E202009fB318D",
+  "FinancialModule#FinancialOporations": "0x8BAc3208a0eD7Bf5C1412650BCb56E7d771346D1",
+  "FinancialModule#LoanSystem": "0xa5bE8b955a3F3D4435F0E20904288c9ADF0B885f",
+  "FinancialModule#UserManagement": "0xd5eDA4edAF0AAB27f3472DDe020CdC2ac0023fB9"
+}

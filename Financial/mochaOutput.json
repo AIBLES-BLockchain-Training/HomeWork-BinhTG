@@ -1,0 +1,350 @@
+{
+ "stats": {
+  "suites": 6,
+  "tests": 24,
+  "passes": 24,
+  "pending": 0,
+  "failures": 0
+ },
+ "tests": [
+  {
+   "title": "Should allow admin to add a user",
+   "fullTitle": "UserManagement Should allow admin to add a user",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should not allow adding a user if the user already exists",
+   "fullTitle": "UserManagement Should not allow adding a user if the user already exists",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow admin to update user role",
+   "fullTitle": "UserManagement Should allow admin to update user role",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should revert if user does not exist when updating role",
+   "fullTitle": "UserManagement Should revert if user does not exist when updating role",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow admin to get user",
+   "fullTitle": "UserManagement Should allow admin to get user",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should revert if user does not exist",
+   "fullTitle": "UserManagement Should revert if user does not exist",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow user to deposit funds and update balance ",
+   "fullTitle": "FinancialOporations Should allow user to deposit funds and update balance ",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "should revert if user tries to withdraw more than their balance",
+   "fullTitle": "FinancialOporations should revert if user tries to withdraw more than their balance",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should request a loan",
+   "fullTitle": "LoanSystem Should request a loan",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should fail if loan amount, loanduration, loaninterest is zero",
+   "fullTitle": "LoanSystem Should fail if loan amount, loanduration, loaninterest is zero",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should approve loan by admin",
+   "fullTitle": "LoanSystem Should approve loan by admin",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should decline loan by admin",
+   "fullTitle": "LoanSystem Should decline loan by admin",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should fail to approve loan and decline loan if already approved",
+   "fullTitle": "LoanSystem Should fail to approve loan and decline loan if already approved",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should calculate total amount correctly",
+   "fullTitle": "LoanSystem Should calculate total amount correctly",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should not allow repayment if the loan is not approved",
+   "fullTitle": "LoanSystem Should not allow repayment if the loan is not approved",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should not allow repayment if the amount is insufficient",
+   "fullTitle": "LoanSystem Should not allow repayment if the amount is insufficient",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit UserAdded event",
+   "fullTitle": "UserManagement Events Should emit UserAdded event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit UserRoleUpdated event",
+   "fullTitle": "UserManagement Events Should emit UserRoleUpdated event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit Deposit event",
+   "fullTitle": "FinancialOperations Events Should emit Deposit event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit Withdrawal event",
+   "fullTitle": "FinancialOperations Events Should emit Withdrawal event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanRequested event",
+   "fullTitle": "LoanSystem Events Should emit LoanRequested event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanApproved event",
+   "fullTitle": "LoanSystem Events Should emit LoanApproved event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanDeclined event",
+   "fullTitle": "LoanSystem Events Should emit LoanDeclined event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanRepaid",
+   "fullTitle": "LoanSystem Events Should emit LoanRepaid",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  }
+ ],
+ "failures": [],
+ "passes": [
+  {
+   "title": "Should allow admin to add a user",
+   "fullTitle": "UserManagement Should allow admin to add a user",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should not allow adding a user if the user already exists",
+   "fullTitle": "UserManagement Should not allow adding a user if the user already exists",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow admin to update user role",
+   "fullTitle": "UserManagement Should allow admin to update user role",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should revert if user does not exist when updating role",
+   "fullTitle": "UserManagement Should revert if user does not exist when updating role",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow admin to get user",
+   "fullTitle": "UserManagement Should allow admin to get user",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should revert if user does not exist",
+   "fullTitle": "UserManagement Should revert if user does not exist",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow user to deposit funds and update balance ",
+   "fullTitle": "FinancialOporations Should allow user to deposit funds and update balance ",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "should revert if user tries to withdraw more than their balance",
+   "fullTitle": "FinancialOporations should revert if user tries to withdraw more than their balance",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should request a loan",
+   "fullTitle": "LoanSystem Should request a loan",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should fail if loan amount, loanduration, loaninterest is zero",
+   "fullTitle": "LoanSystem Should fail if loan amount, loanduration, loaninterest is zero",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should approve loan by admin",
+   "fullTitle": "LoanSystem Should approve loan by admin",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should decline loan by admin",
+   "fullTitle": "LoanSystem Should decline loan by admin",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should fail to approve loan and decline loan if already approved",
+   "fullTitle": "LoanSystem Should fail to approve loan and decline loan if already approved",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should calculate total amount correctly",
+   "fullTitle": "LoanSystem Should calculate total amount correctly",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should not allow repayment if the loan is not approved",
+   "fullTitle": "LoanSystem Should not allow repayment if the loan is not approved",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should not allow repayment if the amount is insufficient",
+   "fullTitle": "LoanSystem Should not allow repayment if the amount is insufficient",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit UserAdded event",
+   "fullTitle": "UserManagement Events Should emit UserAdded event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit UserRoleUpdated event",
+   "fullTitle": "UserManagement Events Should emit UserRoleUpdated event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit Deposit event",
+   "fullTitle": "FinancialOperations Events Should emit Deposit event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit Withdrawal event",
+   "fullTitle": "FinancialOperations Events Should emit Withdrawal event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanRequested event",
+   "fullTitle": "LoanSystem Events Should emit LoanRequested event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanApproved event",
+   "fullTitle": "LoanSystem Events Should emit LoanApproved event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanDeclined event",
+   "fullTitle": "LoanSystem Events Should emit LoanDeclined event",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should emit LoanRepaid",
+   "fullTitle": "LoanSystem Events Should emit LoanRepaid",
+   "file": "test\\Financial.js",
+   "currentRetry": 0,
+   "err": {}
+  }
+ ]
+}

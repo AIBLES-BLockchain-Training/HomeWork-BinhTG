@@ -1,0 +1,792 @@
+{
+ "contracts\\Financial.sol": {
+  "18": [
+   {
+    "title": "Should allow admin to add a user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should revert if user does not exist when updating role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow user to deposit funds and update balance ",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should request a loan",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserAdded event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit Deposit event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRequested event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "21": [
+   {
+    "title": "Should allow admin to add a user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow adding a user if the user already exists",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should revert if user does not exist when updating role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserAdded event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "22": [
+   {
+    "title": "Should allow admin to add a user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow adding a user if the user already exists",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should revert if user does not exist when updating role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserAdded event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "26": [
+   {
+    "title": "Should allow admin to add a user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow adding a user if the user already exists",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should revert if user does not exist when updating role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should revert if user does not exist",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserAdded event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "29": [
+   {
+    "title": "Should allow admin to add a user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow adding a user if the user already exists",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserAdded event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "30": [
+   {
+    "title": "Should allow admin to add a user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow adding a user if the user already exists",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserAdded event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "32": [
+   {
+    "title": "Should allow admin to add a user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow adding a user if the user already exists",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserAdded event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "36": [
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should revert if user does not exist when updating role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "37": [
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "39": [
+   {
+    "title": "Should allow admin to update user role",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit UserRoleUpdated event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "43": [
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should revert if user does not exist",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "45": [
+   {
+    "title": "Should allow admin to get user",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "58": [
+   {
+    "title": "Should allow user to deposit funds and update balance ",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "should revert if user tries to withdraw more than their balance",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit Deposit event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit Withdrawal event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "60": [
+   {
+    "title": "Should allow user to deposit funds and update balance ",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "should revert if user tries to withdraw more than their balance",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit Deposit event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit Withdrawal event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "65": [
+   {
+    "title": "should revert if user tries to withdraw more than their balance",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit Withdrawal event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "67": [
+   {
+    "title": "Should emit Withdrawal event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "69": [
+   {
+    "title": "Should emit Withdrawal event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "71": [
+   {
+    "title": "Should emit Withdrawal event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "92": [
+   {
+    "title": "Should request a loan",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail if loan amount, loanduration, loaninterest is zero",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRequested event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "93": [
+   {
+    "title": "Should request a loan",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail if loan amount, loanduration, loaninterest is zero",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRequested event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "94": [
+   {
+    "title": "Should request a loan",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail if loan amount, loanduration, loaninterest is zero",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRequested event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "96": [
+   {
+    "title": "Should request a loan",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRequested event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "103": [
+   {
+    "title": "Should request a loan",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRequested event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "107": [
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "109": [
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "111": [
+   {
+    "title": "Should approve loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanApproved event",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "115": [
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should fail to approve loan and decline loan if already approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "117": [
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "119": [
+   {
+    "title": "Should decline loan by admin",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanDeclined event",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "124": [
+   {
+    "title": "Should calculate total amount correctly",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "125": [
+   {
+    "title": "Should calculate total amount correctly",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "129": [
+   {
+    "title": "Should not allow repayment if the loan is not approved",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "130": [
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "132": [
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   },
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "133": [
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "134": [
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "136": [
+   {
+    "title": "Should emit LoanRepaid",
+    "file": "test\\Financial.js"
+   }
+  ],
+  "139": [
+   {
+    "title": "Should not allow repayment if the amount is insufficient",
+    "file": "test\\Financial.js"
+   }
+  ]
+ }
+}
