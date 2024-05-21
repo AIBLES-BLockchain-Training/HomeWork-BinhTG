@@ -131,8 +131,10 @@ contract LoanSystem is FinancialOporations {
         
         if(msg.value == calculate){
             loanRQ[msg.sender].amount = 0;
+            loanRQ[msg.sender].duration = 0;
+            loanRQ[msg.sender].interestRate = 0;
             loanRQ[msg.sender].approved = false;
-
+            loanRQ[msg.sender].timestamp = 0;
             emit LoanRepaid(msg.sender, msg.value);
         }
         else{

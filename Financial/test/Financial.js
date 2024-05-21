@@ -3,8 +3,7 @@ const {
   } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
   const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
   const { expect } = require("chai");
-  const { ethers } = require("hardhat", "ethers")
-  
+  const { ethers } = require("hardhat")
 
     describe("UserManagement", function(){
         async function setup(){
@@ -17,15 +16,15 @@ const {
         }
 
         it("Should not allow a non-admin to add a user", async function () {
-            const {userManagement, owner, user1 } = await loadFixture(setup);
+            const {userManagement, owner, user1,  } = await loadFixture(setup);
 
-            await expect(
-              userManagement.connect(user1).addUser(user1.address, "Binh", "user")
+            await expect(userManagement.connect(user1).addUser(user1.address, "Binh", "user")
             ).to.be.revertedWith("Only admin can  this function");
-          });
+        });
 
+        
         it("Should allow admin to add a user", async function(){
-            const {userManagement, owner, user1 } = await loadFixture(setup);
+            const {userManagement, owner, user1,} = await loadFixture(setup);
 
             await userManagement.connect(owner).addUser(user1.address, "Binh", "user");
 
@@ -113,24 +112,28 @@ const {
 
             expect(user1Value).to.equal(10000);
         });
-        
-        // it("Should allow user to withdraw funds and update balance", async function(){
-        //      const { financialOporations, user1 } = await loadFixture(setup);
-        //     await financialOporations.connect(user1).deposit({value: 10000});
+    
 
-        //     const initialUserBalance = await ethers.provider.getBalance(user1.address);
 
-        //     const estimateGas = await financialOporations.connect(user1).estimateGas.withDraw(100);
+        it("Should allow user to withdraw funds and update balance", async function(){
+             const { financialOporations, user1 } = await loadFixture(setup);
+            await financialOporations.connect(user1).deposit({value: 10000});
 
-        //     const transaction = await financialOporations.connect(user1).withDraw(100);
-        //     await transaction.wait();
+            const initialUserBalance = await ethers.provider.getBalance(user1.address);
 
-        //     const FinalUserBalance = await ethers.provider.getBalance(user1.address);
+            const transaction = await financialOporations.connect(user1).withDraw(100);
+            const txReceipt = await transaction.wait();
 
-        //     const expectedFinalBalance = initialUserBalance - estimateGas + 100;
+            //console.log(txReceipt);
 
-        //     expect(FinalUserBalance).to.equal(expectedFinalBalance);
-        // });    
+            console.log(ethers.toBigInt(txReceipt.gasPrice*(txReceipt.cumulativeGasUsed)));
+
+            const FinalUserBalance = await ethers.provider.getBalance(user1.address);
+
+            const expectedFinalBalance = initialUserBalance  - (txReceipt.gasPrice *(txReceipt.cumulativeGasUsed)) + BigInt(100);
+
+            expect(FinalUserBalance).to.equal(expectedFinalBalance);
+        });    
 
         
         it("should revert if user tries to withdraw more than their balance", async function () {
@@ -250,28 +253,24 @@ const {
             expect(totalAmount).to.equal(expectedTotal);
         });
 
-        // it("should repay loan when the exact amount is paid", async function() {
-        //     const { loanSystem, owner, user1, user2 } = await loadFixture(setup);
+        it("Should repay loan when the exact amount is paid", async function() {
+            const { loanSystem, owner, user1, user2 } = await loadFixture(setup);
 
-        //     await loanSystem.connect(user1).requestLoan(1000, 12, 500);
+            await loanSystem.connect(user1).requestLoan(1000, 12, 500);
         
-        //     await loanSystem.connect(owner).approveLoan(user1.address);
+            await loanSystem.connect(owner).approveLoan(user1.address);
         
-        //     const initialBalance = await ethers.provider.getBalance(user1.address);
+            const initialBalance = await ethers.provider.getBalance(user1.address);
 
-        //     await loanSystem.connect(user1).repayLoan({ value: await loanSystem.totalAmount(1000, 500, 12) });
+            const transaction = await loanSystem.connect(user1).repayLoan({ value: await loanSystem.totalAmount(1000, 12, 500) });
+            const txReceipt = await transaction.wait();
+            //console.log(txReceipt);
             
-        //     const finalBalance = await ethers.provider.getBalance(user1.address);
+            const finalBalance = await ethers.provider.getBalance(user1.address);
         
-        //     expect(await loanSystem.loanRQ(user1.address)).to.equal({
-        //       amount: 0,
-        //       duration: 0,
-        //       interestRate: 0,
-        //       approved: false,
-        //       timestamp: 0
-        //     });
-        //     expect(finalBalance).to.equal(initialBalance.sub(await loanSystem.totalAmount(1000, 500, 12)));
-        //   });
+            expect(await loanSystem.loanRQ(user1.address)).to.deep.equal([0, 0, 0, false, 0]);
+            expect(finalBalance).to.equal(initialBalance - (txReceipt.gasPrice * txReceipt.cumulativeGasUsed) - (await loanSystem.totalAmount(1000, 12, 500)));
+          });
         it("Should not allow repayment if the loan is not approved", async function() {
             const { loanSystem, user1 } = await loadFixture(setup);
     
@@ -312,6 +311,7 @@ const {
             .to.emit(userManagement, "UserAdded")
             .withArgs(user1.address, 'A', "user");
         });
+        
         it("Should emit UserRoleUpdated event", async function(){
             const { userManagement, owner, user1 } = await loadFixture(setup);
 
@@ -404,3 +404,9 @@ const {
                 .withArgs(user1.address, repaymentAmount);
         });
     });
+
+
+
+
+
+    
