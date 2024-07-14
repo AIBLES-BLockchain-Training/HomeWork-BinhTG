@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract CollateralManager {
-
     struct Collateral {
         uint256 amount;
         bool isLocked;
@@ -21,23 +20,42 @@ contract CollateralManager {
     uint256 public serviceFee;
 
     mapping(address => mapping(address => Collateral)) public userCollaterals;
-    mapping(address => address[]) public userCollateralAddresses; 
-    mapping(address => bool) public isTokenAllowed; 
+    mapping(address => address[]) public userCollateralAddresses;
+    mapping(address => bool) public isTokenAllowed;
 
-    event CollateralAdded(address indexed user, address indexed collateralAddress, uint256 amount);
-    event CollateralRemoved(address indexed user, address indexed collateralAddress, uint256 amount);
+    event CollateralAdded(
+        address indexed user,
+        address indexed collateralAddress,
+        uint256 amount
+    );
+    event CollateralRemoved(
+        address indexed user,
+        address indexed collateralAddress,
+        uint256 amount
+    );
     event LoanLiquidated(uint256 indexed loanId, address borrower);
-    event CollateralLocked(address indexed user, address indexed collateralAddress, bool isLocked);
-    event CollateralUnlocked(address indexed user, address indexed collateralAddress, bool isLocked);
+    event CollateralLocked(
+        address indexed user,
+        address indexed collateralAddress,
+        bool isLocked
+    );
+    event CollateralUnlocked(
+        address indexed user,
+        address indexed collateralAddress,
+        bool isLocked
+    );
     event ServiceFeeSet(uint256 serviceFee);
 
-    modifier onlyAdmin() { 
+    modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can call this function");
         _;
-    }    
+    }
 
-    modifier onlyAuthorizeContract {
-        require(msg.sender == address(borrower) || msg.sender == address(this), "Only authorize contract can call this function");
+    modifier onlyAuthorizeContract() {
+        require(
+            msg.sender == address(borrower) || msg.sender == address(this),
+            "Only authorize contract can call this function"
+        );
         _;
     }
 
@@ -58,12 +76,12 @@ contract CollateralManager {
     function setAllowedToken(address[] memory tokens) public onlyAdmin {
         require(tokens.length <= 5, "You can only set up tp 5 allowed tokens");
 
-        for(uint256 i = 0; i < allowedTokens.length; i++) {
+        for (uint256 i = 0; i < allowedTokens.length; i++) {
             isTokenAllowed[tokens[i]] = false;
         }
 
         allowedTokens = tokens;
-        for(uint256 i = 0; i < tokens.length; i++) {
+        for (uint256 i = 0; i < tokens.length; i++) {
             isTokenAllowed[tokens[i]] = true;
         }
     }
@@ -72,25 +90,31 @@ contract CollateralManager {
         return allowedTokens;
     }
 
-    function setServiceFee(uint256 _serviceFee) external onlyAdmin {  
+    function setServiceFee(uint256 _serviceFee) external onlyAdmin {
         serviceFee = _serviceFee;
         emit ServiceFeeSet(serviceFee);
     }
 
     function addCollateral(address collateralAddress, uint256 amount) external {
-        Collateral storage collateral = userCollaterals[msg.sender][collateralAddress];
+        Collateral storage collateral = userCollaterals[msg.sender][
+            collateralAddress
+        ];
 
         require(collateralAddress != address(0), "Invalid collateralAddress");
-        require(amount > 0, "Token amount must be greater than zero") ;
+        require(amount > 0, "Token amount must be greater than zero");
         require(isTokenAllowed[collateralAddress], "Token is not allowed");
         require(!collateral.isLocked, "Collateral is currently locked");
 
-        if(collateral.amount == 0) {
+        if (collateral.amount == 0) {
             userCollateralAddresses[msg.sender].push(collateralAddress);
         }
         collateral.amount += amount;
 
-        IERC20(collateralAddress).transferFrom(msg.sender, address(this), amount);
+        IERC20(collateralAddress).transferFrom(
+            msg.sender,
+            address(this),
+            amount
+        );
 
         payable(address(lendingPool)).transfer(serviceFee);
         lendingPool.updateServiceFeeETH(serviceFee);
@@ -98,9 +122,14 @@ contract CollateralManager {
         emit CollateralAdded(msg.sender, collateralAddress, amount);
     }
 
-    function removeCollateral(address collateralAddress, uint256 amount) external {
-        Collateral storage collateral = userCollaterals[msg.sender][collateralAddress];
-        
+    function removeCollateral(
+        address collateralAddress,
+        uint256 amount
+    ) external {
+        Collateral storage collateral = userCollaterals[msg.sender][
+            collateralAddress
+        ];
+
         require(!collateral.isLocked, "Collateral is currently locked");
         require(collateral.amount >= amount, "Not enough collateral to remove");
 
@@ -114,11 +143,19 @@ contract CollateralManager {
         emit CollateralRemoved(msg.sender, collateralAddress, amount);
     }
 
-    function lockCollaterals(address user, address[] calldata collateralAddresses) public onlyAuthorizeContract {
+    function lockCollaterals(
+        address user,
+        address[] calldata collateralAddresses
+    ) public onlyAuthorizeContract {
         for (uint256 i = 0; i < collateralAddresses.length; i++) {
             address collateralAddress = collateralAddresses[i];
-            Collateral storage collateral = userCollaterals[user][collateralAddress];
-            require(collateral.amount > 0, "Collateral amount must be greater than zero");
+            Collateral storage collateral = userCollaterals[user][
+                collateralAddress
+            ];
+            require(
+                collateral.amount > 0,
+                "Collateral amount must be greater than zero"
+            );
 
             collateral.isLocked = true;
 
@@ -126,29 +163,44 @@ contract CollateralManager {
         }
     }
 
-    function unlockCollaterals(address user, address[] calldata collateralAddresses) public onlyAuthorizeContract {
+    function unlockCollaterals(
+        address user,
+        address[] calldata collateralAddresses
+    ) public onlyAuthorizeContract {
         for (uint256 i = 0; i < collateralAddresses.length; i++) {
             address collateralAddress = collateralAddresses[i];
-            Collateral storage collateral = userCollaterals[user][collateralAddress];
-            require(collateral.amount > 0, "Collateral amount must be greater than zero");
+            Collateral storage collateral = userCollaterals[user][
+                collateralAddress
+            ];
+            require(
+                collateral.amount > 0,
+                "Collateral amount must be greater than zero"
+            );
 
             collateral.isLocked = false;
 
             emit CollateralUnlocked(user, collateralAddress, false);
         }
     }
-    function getCollateralAmount(address user, address collateralAddress) external view returns (uint256) {
+    function getCollateralAmount(
+        address user,
+        address collateralAddress
+    ) external view returns (uint256) {
         return userCollaterals[user][collateralAddress].amount;
     }
 
-    function getCollateralValueForTokens(address user, address[] memory tokenAddresses) external view returns (uint256) {
+    function getCollateralValueForTokens(
+        address user,
+        address[] memory tokenAddresses
+    ) external view returns (uint256) {
         uint256 totalValue = 0;
 
         for (uint256 i = 0; i < tokenAddresses.length; i++) {
             address tokenAddress = tokenAddresses[i];
             if (isTokenAllowed[tokenAddress]) {
                 uint256 assetPrice = priceOracle.getAssetPrice(tokenAddress);
-                uint256 collateralValue = (assetPrice * userCollaterals[user][tokenAddress].amount) / 1e18;
+                uint256 collateralValue = (assetPrice *
+                    userCollaterals[user][tokenAddress].amount) / 1e18;
                 totalValue += collateralValue;
             }
         }

@@ -37,8 +37,18 @@ contract Borrower {
     mapping(address => RiskParameters) public riskParameters;
 
     event ServiceFeeSet(uint256 serviceFee);
-    event RiskParametersSet(address indexed token, uint256 l, uint256 liquidationThreshold);
-    event LoanCreated(uint256 loanId, address borrower, address tokenAddress, uint256 tokenAmount, address[] tvcollateralAddresses);
+    event RiskParametersSet(
+        address indexed token,
+        uint256 l,
+        uint256 liquidationThreshold
+    );
+    event LoanCreated(
+        uint256 loanId,
+        address borrower,
+        address tokenAddress,
+        uint256 tokenAmount,
+        address[] tvcollateralAddresses
+    );
     event LoanRepaid(uint256 loanId, address borrower, uint256 amount);
     event LoanLiquidated(uint256 loanId, address borrower);
 
@@ -61,7 +71,7 @@ contract Borrower {
         priceOracle = IPriceOracle(_priceOracle);
         collateralManager = ICollateralManager(_collateralManager);
         lendingPool = ILendingPool(_lendingPool);
-        interestRate = IInterestRate(_interestRate) ;
+        interestRate = IInterestRate(_interestRate);
     }
 
     function setServiceFee(uint256 _serviceFee) external onlyAdmin {
@@ -69,44 +79,70 @@ contract Borrower {
         emit ServiceFeeSet(serviceFee);
     }
 
-    function setRiskParameters(address token, uint256 _ltv, uint256 _liquidationThreshold) external onlyAdmin {
-        require(_ltv < _liquidationThreshold, "LTV must be less than Liquidation Threshold");
+    function setRiskParameters(
+        address token,
+        uint256 _ltv,
+        uint256 _liquidationThreshold
+    ) external onlyAdmin {
+        require(
+            _ltv < _liquidationThreshold,
+            "LTV must be less than Liquidation Threshold"
+        );
         riskParameters[token] = RiskParameters({
             ltv: _ltv,
             liquidationThreshold: _liquidationThreshold
         });
 
         emit RiskParametersSet(token, _ltv, _liquidationThreshold);
-
     }
-    
-    function createLoan(address tokenAddress, uint256 tokenAmount, address[] calldata collateralAddresses) external  {
-        require(collateralAddresses.length > 0, "Must provide at least one collateral address");
 
-        uint256 totalCollateralValueInUSD = collateralManager.getCollateralValueForTokens(msg.sender, collateralAddresses);
+    function createLoan(
+        address tokenAddress,
+        uint256 tokenAmount,
+        address[] calldata collateralAddresses
+    ) external {
+        require(
+            collateralAddresses.length > 0,
+            "Must provide at least one collateral address"
+        );
 
-        uint256 maxLoanAmountInUSD = totalCollateralValueInUSD * riskParameters[tokenAddress].ltv / decimal;
+        uint256 totalCollateralValueInUSD = collateralManager
+            .getCollateralValueForTokens(msg.sender, collateralAddresses);
+
+        uint256 maxLoanAmountInUSD = (totalCollateralValueInUSD *
+            riskParameters[tokenAddress].ltv) / decimal;
 
         uint256 tokenPriceInUSD = priceOracle.getAssetPrice(tokenAddress);
 
-        uint256 maxLoanAmountInTokens = (maxLoanAmountInUSD / tokenPriceInUSD) * 1e18;
+        uint256 maxLoanAmountInTokens = (maxLoanAmountInUSD / tokenPriceInUSD) *
+            1e18;
 
-        require(tokenAmount > 0 && tokenAmount <= maxLoanAmountInTokens, string(abi.encodePacked("Loan amount must be greater than zero and less than or equal to ", Strings.toString(maxLoanAmountInTokens), " tokens")));
+        require(
+            tokenAmount > 0 && tokenAmount <= maxLoanAmountInTokens,
+            string(
+                abi.encodePacked(
+                    "Loan amount must be greater than zero and less than or equal to ",
+                    Strings.toString(maxLoanAmountInTokens),
+                    " tokens"
+                )
+            )
+        );
 
         loanCounter++;
         uint256 loanId = loanCounter;
 
-        (, uint256 currentVariableBorrowIndex, ,) = interestRate.getReserveData(tokenAddress);
+        (, uint256 currentVariableBorrowIndex, , ) = interestRate
+            .getReserveData(tokenAddress);
 
         collateralManager.lockCollaterals(msg.sender, collateralAddresses);
 
-        loans[loanId] = Loan ({
+        loans[loanId] = Loan({
             loanId: loanId,
             borrower: msg.sender,
             tokenAddress: tokenAddress,
-            tokenAmount: tokenAmount,  
+            tokenAmount: tokenAmount,
             collateralAddresses: collateralAddresses,
-            variableBorrowIndex: currentVariableBorrowIndex            
+            variableBorrowIndex: currentVariableBorrowIndex
         });
 
         loanIds.push(loanId);
@@ -117,8 +153,13 @@ contract Borrower {
         payable(address(lendingPool)).transfer(serviceFee);
         lendingPool.updateServiceFeeETH(serviceFee);
 
-        emit LoanCreated(loanId, msg.sender, tokenAddress, tokenAmount, collateralAddresses);
-
+        emit LoanCreated(
+            loanId,
+            msg.sender,
+            tokenAddress,
+            tokenAmount,
+            collateralAddresses
+        );
     }
 
     function repayLoan(uint256 loanId, uint256 amount) external {
@@ -126,22 +167,33 @@ contract Borrower {
         require(loan.borrower == msg.sender, "Caller is not the borrower");
         require(amount > 0, "Invalid repayment amount");
 
-        (uint256 totalRepayment, uint256 currentVariableBorrowIndex) = calculateTotalRepayment(loanId);
+        (
+            uint256 totalRepayment,
+            uint256 currentVariableBorrowIndex
+        ) = calculateTotalRepayment(loanId);
         loan.tokenAmount = totalRepayment;
 
         if (amount < totalRepayment) {
             loan.tokenAmount -= amount;
             loan.variableBorrowIndex = currentVariableBorrowIndex;
 
-            IERC20(loan.tokenAddress).transferFrom(msg.sender, address(lendingPool), amount);
-            
+            IERC20(loan.tokenAddress).transferFrom(
+                msg.sender,
+                address(lendingPool),
+                amount
+            );
+
             payable(address(lendingPool)).transfer(serviceFee);
             lendingPool.updateServiceFeeETH(serviceFee);
-        }else{
+        } else {
             uint256 excessAmount = amount - totalRepayment;
             loan.tokenAmount = 0;
 
-            IERC20(loan.tokenAddress).transferFrom(msg.sender, address(lendingPool), amount);
+            IERC20(loan.tokenAddress).transferFrom(
+                msg.sender,
+                address(lendingPool),
+                amount
+            );
 
             payable(address(lendingPool)).transfer(serviceFee);
             lendingPool.updateServiceFeeETH(serviceFee);
@@ -150,7 +202,10 @@ contract Borrower {
                 IERC20(loan.tokenAddress).transfer(loan.borrower, excessAmount);
             }
 
-            collateralManager.unlockCollaterals(msg.sender, loan.collateralAddresses);
+            collateralManager.unlockCollaterals(
+                msg.sender,
+                loan.collateralAddresses
+            );
 
             removeLoanIdFromBorrower(msg.sender, loanId);
             removeLoanIdFromGlobalList(loanId);
@@ -158,7 +213,7 @@ contract Borrower {
 
         emit LoanRepaid(loanId, msg.sender, amount);
     }
-    
+
     function removeLoanIdFromBorrower(address user, uint256 loanId) internal {
         uint256[] storage userLoanIds = userLoans[user];
         for (uint256 i = 0; i < userLoanIds.length; i++) {
@@ -178,32 +233,46 @@ contract Borrower {
                 break;
             }
         }
-    }     
-    
-    function calculateTotalRepayment(uint256 loanId) public view returns (uint256, uint256) {
-        Loan memory loan = loans[loanId];
-        (,uint256 currentVariableBorrowIndex,,) = interestRate.getReserveData(loan.tokenAddress);
-
-        uint256 totalRepayment = loan.tokenAmount * currentVariableBorrowIndex / loan.variableBorrowIndex;
-
-        return (totalRepayment, currentVariableBorrowIndex) ;
     }
 
-    function getCurrentVariableBorrowRate(address tokenAddress) public view returns (uint256) {
-        (,,,uint256 currentVariableBorrowRate) = interestRate.getReserveData(tokenAddress);
+    function calculateTotalRepayment(
+        uint256 loanId
+    ) public view returns (uint256, uint256) {
+        Loan memory loan = loans[loanId];
+        (, uint256 currentVariableBorrowIndex, , ) = interestRate
+            .getReserveData(loan.tokenAddress);
+
+        uint256 totalRepayment = (loan.tokenAmount *
+            currentVariableBorrowIndex) / loan.variableBorrowIndex;
+
+        return (totalRepayment, currentVariableBorrowIndex);
+    }
+
+    function getCurrentVariableBorrowRate(
+        address tokenAddress
+    ) public view returns (uint256) {
+        (, , , uint256 currentVariableBorrowRate) = interestRate.getReserveData(
+            tokenAddress
+        );
         return currentVariableBorrowRate;
     }
 
     function checkHealthFactor(uint256 loanId) public view returns (uint256) {
         Loan memory loan = loans[loanId];
-        uint256 totalCollateralValueInUSD = collateralManager.getCollateralValueForTokens(loan.borrower, loan.collateralAddresses);
+        uint256 totalCollateralValueInUSD = collateralManager
+            .getCollateralValueForTokens(
+                loan.borrower,
+                loan.collateralAddresses
+            );
         uint256 tokenPriceInUSD = priceOracle.getAssetPrice(loan.tokenAddress);
-        
-        (uint256 totalLoanAmount,) = calculateTotalRepayment(loanId);
-        uint256 loanAmountInUSD = (totalLoanAmount * tokenPriceInUSD) / 1e18;
-        uint256 liquidationThreshold = riskParameters[loan.tokenAddress].liquidationThreshold;
 
-        uint256 healthFactor = (totalCollateralValueInUSD * liquidationThreshold) / loanAmountInUSD;
+        (uint256 totalLoanAmount, ) = calculateTotalRepayment(loanId);
+        uint256 loanAmountInUSD = (totalLoanAmount * tokenPriceInUSD) / 1e18;
+        uint256 liquidationThreshold = riskParameters[loan.tokenAddress]
+            .liquidationThreshold;
+
+        uint256 healthFactor = (totalCollateralValueInUSD *
+            liquidationThreshold) / loanAmountInUSD;
 
         return healthFactor;
     }
@@ -215,13 +284,22 @@ contract Borrower {
     function liquidateLoan(uint256 loanId) external {
         Loan memory loan = loans[loanId];
 
-       collateralManager.unlockCollaterals(loan.borrower, loan.collateralAddresses);
+        collateralManager.unlockCollaterals(
+            loan.borrower,
+            loan.collateralAddresses
+        );
 
         for (uint256 j = 0; j < loan.collateralAddresses.length; j++) {
             address collateralAddress = loan.collateralAddresses[j];
-            uint256 collateralAmount =  collateralManager.getCollateralAmount(loan.borrower, collateralAddress);
+            uint256 collateralAmount = collateralManager.getCollateralAmount(
+                loan.borrower,
+                collateralAddress
+            );
 
-            IERC20(collateralAddress).transfer(address(lendingPool), collateralAmount);
+            IERC20(collateralAddress).transfer(
+                address(lendingPool),
+                collateralAmount
+            );
         }
 
         removeLoanIdFromBorrower(loan.borrower, loanId);

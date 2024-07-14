@@ -13,7 +13,7 @@ contract PriceOracle {
     event CustomPriceSet(address indexed asset, uint256 price);
     event OracleReset(address indexed asset);
 
-    modifier onlyOwner() { 
+    modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
         _;
     }
@@ -47,10 +47,12 @@ contract PriceOracle {
         emit OracleReset(asset);
     }
 
-    function _getPriceFromChainLink(address oracle) internal view returns(uint256) {
+    function _getPriceFromChainLink(
+        address oracle
+    ) internal view returns (uint256) {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(oracle);
-        (,int256 price,,,) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = priceFeed.latestRoundData();
         require(price > 0, "Invalid price");
-        return uint256(price);        
+        return uint256(price);
     }
 }
