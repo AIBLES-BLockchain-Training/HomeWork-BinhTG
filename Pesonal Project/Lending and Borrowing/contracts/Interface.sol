@@ -33,6 +33,8 @@ interface ICollateralManager {
         address borrower,
         address[] memory tokenAddresses
     ) external view returns (uint256);
+    function transferCollateral(address collateralAddress, uint256 amount) external;
+
 }
 
 interface ILendingPool {
@@ -48,7 +50,7 @@ interface ILendingPool {
         address borrower,
         uint256 amount
     ) external;
-    function updateServiceFeeETH(uint256 amount) external;
+    function transferExcessAmount(address tokenAddress, address user, uint256 amount) external;
     function getCurrentUtilizationRate(
         address tokenAddress
     ) external view returns (uint256);
@@ -69,6 +71,10 @@ interface IInterestRate {
         uint256 variableBorrowIndex;
         uint256 lastUpdateTimestamp;
     }
+    
+    function calculateDepositAPY(
+        address tokenAddress
+    ) external view returns (uint256) ;
 
     function getInterestRateParams(
         address tokenAddress

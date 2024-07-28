@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 contract PriceOracle {
-    address public owner;
+    address public admin;
 
     mapping(address => address) public assetOracles;
     mapping(address => uint256) public customPrices;
@@ -13,21 +13,21 @@ contract PriceOracle {
     event CustomPriceSet(address indexed asset, uint256 price);
     event OracleReset(address indexed asset);
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
         _;
     }
 
     constructor() {
-        owner = msg.sender;
+        admin = msg.sender;
     }
 
-    function setAssetOracle(address asset, address oracle) external onlyOwner {
+    function setAssetOracle(address asset, address oracle) external onlyAdmin {
         assetOracles[asset] = oracle;
         emit OracleSet(asset, oracle);
     }
 
-    function setCustomPrice(address asset, uint256 price) external onlyOwner {
+    function setCustomPrice(address asset, uint256 price) external onlyAdmin {
         customPrices[asset] = price;
         emit CustomPriceSet(asset, price);
     }
@@ -42,7 +42,7 @@ contract PriceOracle {
         revert("No price available for the specified asset");
     }
 
-    function resetAssetOracle(address asset) external onlyOwner {
+    function resetAssetOracle(address asset) external onlyAdmin {
         delete assetOracles[asset];
         emit OracleReset(asset);
     }
@@ -56,3 +56,5 @@ contract PriceOracle {
         return uint256(price);
     }
 }
+// Viết contract mockAggregator implement AggregatorV3Interface
+// 

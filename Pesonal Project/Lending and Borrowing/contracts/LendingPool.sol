@@ -40,8 +40,6 @@ contract LendingPool {
         address indexed user,
         uint256 amount
     );
-    event ServiceFeeUpdated(uint256 amount);
-    event ServiceFeeWithdraw(address indexed admin, uint256 amount);
     event ServiceFeeSet(uint256 serviceFeeBalance);
 
     modifier onlyAdmin() {
@@ -52,9 +50,9 @@ contract LendingPool {
     modifier onlyAuthorizedContracts() {
         require(
             msg.sender == address(borrower) ||
-                msg.sender == address(collateralManager) ||
-                msg.sender == address(this),
-            "Only Borrower or CollateralManager contract can call this function"
+            msg.sender == address(collateralManager) ||
+            msg.sender == address(this),
+            "Only authorized contracts can call this function"
         );
         _;
     }
@@ -88,13 +86,17 @@ contract LendingPool {
         emit ServiceFeeSet(serviceFee);
     }
 
-    function depositAsset(address tokenAddress, uint256 amount) external {
+    function depositAsset(address tokenAddress, uint256 amount) external payable{
         require(amount > 0, "The amount must be greater than zero");
         require(
             isTokenAllowed(tokenAddress),
             "Token is not allowed for deposit"
         );
-
+        require(msg.value == serviceFee, "Incorrect service fee amount");
+        
+        (bool feeSuccess, ) = address(this).call{value: serviceFee}("");
+        require(feeSuccess, "Transfer of service fee failed");
+        
         LenderAsset storage lenderAsset = lenderAssets[msg.sender][
             tokenAddress
         ];
@@ -115,9 +117,7 @@ contract LendingPool {
         assetBalances[tokenAddress] += amount;
         totalSupplied[tokenAddress] += amount;
 
-        payable(address(this)).transfer(serviceFee);
-        updateServiceFee(serviceFee);
-
+        
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
 
         interestRate.updateInterestRates(tokenAddress);
@@ -125,12 +125,13 @@ contract LendingPool {
         emit AssetDeposit(msg.sender, tokenAddress, amount);
     }
 
-    function withDraw(address tokenAddress, uint256 amount) external {
+    function withDraw(address tokenAddress, uint256 amount) external payable{
         require(amount > 0, "The withdrawal amount must be greater than zero");
         require(
             isTokenAllowed(tokenAddress),
             "Token is not allowed for withdrawal"
         );
+        require(msg.value == serviceFee, "Incorrect service fee amount");
 
         LenderAsset storage lenderAsset = lenderAssets[msg.sender][
             tokenAddress
@@ -150,14 +151,22 @@ contract LendingPool {
         assetBalances[tokenAddress] -= amount;
         totalSupplied[tokenAddress] -= amount;
 
-        payable(address(this)).transfer(serviceFee);
-        updateServiceFee(serviceFee);
+        (bool feeSuccess, ) = address(this).call{value: serviceFee}("");
+        require(feeSuccess, "Transfer of service fee failed");
+        //updateServiceFee(serviceFee);
 
         IERC20(tokenAddress).transfer(msg.sender, amount);
 
         interestRate.updateInterestRates(tokenAddress);
 
         emit AssetWithdraw(msg.sender, tokenAddress, amount);
+    }
+
+    function getDepositAPY(
+        address tokenAddress
+    ) external view returns (uint256) {
+        uint256 depositAPY = interestRate.calculateDepositAPY(tokenAddress);
+        return depositAPY;
     }
 
     function getTotalBalance(
@@ -181,9 +190,6 @@ contract LendingPool {
         address user,
         uint256 amount
     ) external onlyAuthorizedContracts {
-        require(tokenAddress != address(0), "Invalid token address");
-        require(user != address(0), "Invalid borrower address");
-        require(amount > 0, "Invalid amount");
         require(
             assetBalances[tokenAddress] >= amount,
             "Insufficient balance in lending pool"
@@ -193,9 +199,12 @@ contract LendingPool {
         totalBorrowed[tokenAddress] += amount;
 
         IERC20(tokenAddress).transfer(user, amount);
-
         emit LoanTransferred(tokenAddress, user, amount);
     }
+
+    function transferExcessAmount(address tokenAddress, address user, uint256 amount) external onlyAuthorizedContracts {
+        IERC20(tokenAddress).transfer(user, amount);
+    } 
 
     function getCurrentUtilizationRate(
         address tokenAddress
@@ -214,16 +223,18 @@ contract LendingPool {
 
         serviceFeeBalance -= amount;
         payable(admin).transfer(amount);
-
-        emit ServiceFeeWithdraw(admin, amount);
     }
 
-    function updateServiceFee(uint256 amount) public onlyAuthorizedContracts {
-        serviceFeeBalance += amount;
-        emit ServiceFeeUpdated(serviceFeeBalance);
-    }
-    // Xem xét thêm cả Interest Rate cũng có thể gọi
+    // function updateServiceFee(uint256 amount) public onlyAuthorizedContracts {
+    //     serviceFeeBalance += amount;
+    //     emit ServiceFeeUpdated(serviceFeeBalance);
+    // }
+
     receive() external payable {
-        serviceFee += msg.value;
+        serviceFeeBalance += msg.value;
     }
+
+    // fallback() external payable {
+    //     serviceFeeBalance += msg.value;
+    // }
 }

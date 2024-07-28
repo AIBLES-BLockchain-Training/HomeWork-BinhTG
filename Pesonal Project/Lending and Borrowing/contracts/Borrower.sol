@@ -47,7 +47,7 @@ contract Borrower {
         address borrower,
         address tokenAddress,
         uint256 tokenAmount,
-        address[] tvcollateralAddresses
+        address[] collateralAddresses
     );
     event LoanRepaid(uint256 loanId, address borrower, uint256 amount);
     event LoanLiquidated(uint256 loanId, address borrower);
@@ -96,18 +96,22 @@ contract Borrower {
         emit RiskParametersSet(token, _ltv, _liquidationThreshold);
     }
 
+    // function getCollateralValueForTokens(address user, address[] memory tokenAddresses) public view returns (uint256) {
+    //     return collateralManager.getCollateralValueForTokens(user, tokenAddresses);
+    // }
+
     function createLoan(
         address tokenAddress,
         uint256 tokenAmount,
         address[] calldata collateralAddresses
-    ) external {
+    ) external payable{
         require(
             collateralAddresses.length > 0,
             "Must provide at least one collateral address"
         );
+        require(msg.value == serviceFee, "Incorrect service fee amount");
 
-        uint256 totalCollateralValueInUSD = collateralManager
-            .getCollateralValueForTokens(msg.sender, collateralAddresses);
+        uint256 totalCollateralValueInUSD = collateralManager.getCollateralValueForTokens(msg.sender, collateralAddresses);
 
         uint256 maxLoanAmountInUSD = (totalCollateralValueInUSD *
             riskParameters[tokenAddress].ltv) / decimal;
@@ -121,9 +125,7 @@ contract Borrower {
             tokenAmount > 0 && tokenAmount <= maxLoanAmountInTokens,
             string(
                 abi.encodePacked(
-                    "Loan amount must be greater than zero and less than or equal to ",
-                    Strings.toString(maxLoanAmountInTokens),
-                    " tokens"
+                    "Loan amount must be greater than zero and less than max loan amount in tokens"
                 )
             )
         );
@@ -150,8 +152,10 @@ contract Borrower {
 
         lendingPool.transferLoan(tokenAddress, msg.sender, tokenAmount);
 
-        payable(address(lendingPool)).transfer(serviceFee);
-        lendingPool.updateServiceFeeETH(serviceFee);
+        (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}("");
+        require(feeSuccess, "Transfer of service fee failed");        
+
+        interestRate.updateInterestRates(tokenAddress);
 
         emit LoanCreated(
             loanId,
@@ -162,7 +166,7 @@ contract Borrower {
         );
     }
 
-    function repayLoan(uint256 loanId, uint256 amount) external {
+    function repayLoan(uint256 loanId, uint256 amount) external payable {
         Loan storage loan = loans[loanId];
         require(loan.borrower == msg.sender, "Caller is not the borrower");
         require(amount > 0, "Invalid repayment amount");
@@ -172,6 +176,7 @@ contract Borrower {
             uint256 currentVariableBorrowIndex
         ) = calculateTotalRepayment(loanId);
         loan.tokenAmount = totalRepayment;
+        require(msg.value == serviceFee, "Incorrect service fee amount");
 
         if (amount < totalRepayment) {
             loan.tokenAmount -= amount;
@@ -183,8 +188,9 @@ contract Borrower {
                 amount
             );
 
-            payable(address(lendingPool)).transfer(serviceFee);
-            lendingPool.updateServiceFeeETH(serviceFee);
+            (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}("");
+            require(feeSuccess, "Transfer of service fee failed");
+
         } else {
             uint256 excessAmount = amount - totalRepayment;
             loan.tokenAmount = 0;
@@ -195,11 +201,11 @@ contract Borrower {
                 amount
             );
 
-            payable(address(lendingPool)).transfer(serviceFee);
-            lendingPool.updateServiceFeeETH(serviceFee);
+            (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}("");
+            require(feeSuccess, "Transfer of service fee failed");
 
             if (excessAmount > 0) {
-                IERC20(loan.tokenAddress).transfer(loan.borrower, excessAmount);
+                lendingPool.transferExcessAmount(loan.tokenAddress, msg.sender, excessAmount);
             }
 
             collateralManager.unlockCollaterals(
@@ -210,6 +216,8 @@ contract Borrower {
             removeLoanIdFromBorrower(msg.sender, loanId);
             removeLoanIdFromGlobalList(loanId);
         }
+
+        interestRate.updateInterestRates(loan.tokenAddress);
 
         emit LoanRepaid(loanId, msg.sender, amount);
     }
@@ -267,6 +275,7 @@ contract Borrower {
         uint256 tokenPriceInUSD = priceOracle.getAssetPrice(loan.tokenAddress);
 
         (uint256 totalLoanAmount, ) = calculateTotalRepayment(loanId);
+        
         uint256 loanAmountInUSD = (totalLoanAmount * tokenPriceInUSD) / 1e18;
         uint256 liquidationThreshold = riskParameters[loan.tokenAddress]
             .liquidationThreshold;
@@ -281,7 +290,7 @@ contract Borrower {
         return loanIds;
     }
 
-    function liquidateLoan(uint256 loanId) external {
+    function liquidateLoan(uint256 loanId) external {   // Thêm onlyAuthorized
         Loan memory loan = loans[loanId];
 
         collateralManager.unlockCollaterals(
@@ -296,10 +305,7 @@ contract Borrower {
                 collateralAddress
             );
 
-            IERC20(collateralAddress).transfer(
-                address(lendingPool),
-                collateralAmount
-            );
+            collateralManager.transferCollateral(collateralAddress, collateralAmount);
         }
 
         removeLoanIdFromBorrower(loan.borrower, loanId);

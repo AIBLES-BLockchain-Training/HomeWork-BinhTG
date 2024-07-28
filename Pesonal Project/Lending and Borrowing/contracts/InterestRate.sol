@@ -5,9 +5,10 @@ import "contracts/Interface.sol";
 
 contract InterestRate {
     address public admin;
-    uint256 constant decimal = 1000;
+    uint256 constant decimal = 10000;
 
     ILendingPool public lendingPool;
+    IBorrower public borrower;
 
     struct InterestParams {
         uint256 slope1;
@@ -47,9 +48,26 @@ contract InterestRate {
         _;
     }
 
-    constructor(address _lendingPool) {
+    modifier onlyAuthorizedContracts() {
+        require(
+            msg.sender == address(lendingPool) ||
+            msg.sender == address(borrower) ||
+            msg.sender == address(this),
+            "Only authorized contracts can call this function"
+        );
+        _;
+    }
+
+    constructor() {
         admin = msg.sender;
+    }
+    
+    function setContractAddresses(
+        address _lendingPool,
+        address _borrower
+    ) external onlyAdmin {
         lendingPool = ILendingPool(_lendingPool);
+        borrower = IBorrower(_borrower);
     }
 
     function setInterestRateParams(
@@ -64,7 +82,7 @@ contract InterestRate {
             slope2: _slope2,
             baseRate: _baseRate,
             utilizationOptimal: _utilizationOptimal
-        });
+    });
 
         emit InterestRateSet(
             tokenAddress,
@@ -104,13 +122,13 @@ contract InterestRate {
 
         if (utilizationRate <= params.utilizationOptimal) {
             borrowAPR =
-                params.baseRate +
+                params.baseRate +                        
                 (utilizationRate * params.slope1) /
                 params.utilizationOptimal;
         } else {
-            uint256 excessUtilization = utilizationRate -
-                params.utilizationOptimal;
-            borrowAPR =
+            uint256 excessUtilization = utilizationRate -     
+                params.utilizationOptimal;              
+            borrowAPR =                                       
                 params.baseRate +
                 params.slope1 +
                 (excessUtilization * params.slope2) /
@@ -126,10 +144,14 @@ contract InterestRate {
         uint256 borrowRate = calculateBorrowAPR(tokenAddress);
 
         uint256 n = 365 * 24 * 60 * 60;
-        uint256 borrowAPY = ((1 * decimal + borrowRate / n) ** n - 1 * decimal);
+        uint256 borrowAPY;
+        unchecked{
+            borrowAPY = ((1 + borrowRate / decimal / n) ** n -1) * decimal;
+        }
 
         return borrowAPY;
     }
+    
     function calculateDepositAPY(
         address tokenAddress
     ) external view returns (uint256) {
@@ -143,14 +165,14 @@ contract InterestRate {
         return depositAPY;
     }
 
-    function updateInterestRates(address tokenAddress) external {
+    function updateInterestRates(address tokenAddress) external onlyAuthorizedContracts{
         ReserveData storage reserve = reserves[tokenAddress];
 
         uint256 timeElapsed = block.timestamp - reserve.lastUpdateTimestamp;
 
-        if (timeElapsed == 0) {
-            return;
-        }
+        // if (timeElapsed == 0) {
+        //     return;
+        // }
 
         uint256 utilizationRate = lendingPool.getCurrentUtilizationRate(
             tokenAddress
@@ -162,17 +184,19 @@ contract InterestRate {
         reserve.currentLiquidityRate = liquidityRate;
         reserve.currentVariableBorrowRate = borrowAPY;
 
-        reserve.liquidityIndex =
-            reserve.liquidityIndex *
-            (1 +
-                (((liquidityRate / decimal) * timeElapsed) /
-                    (365 * 24 * 60 * 60)));
-        reserve.variableBorrowIndex =
-            reserve.variableBorrowIndex *
-            (1 +
-                (((borrowAPY / decimal) * timeElapsed) / (365 * 24 * 60 * 60)));
-        reserve.lastUpdateTimestamp = block.timestamp;
-
+        unchecked{
+            reserve.liquidityIndex =
+                reserve.liquidityIndex *
+                (1 +
+                    (((liquidityRate / decimal) * timeElapsed) /
+                        (365 * 24 * 60 * 60)));
+            reserve.variableBorrowIndex =
+                reserve.variableBorrowIndex *
+                (1 +
+                    (((borrowAPY / decimal) * timeElapsed) / (365 * 24 * 60 * 60)));
+            reserve.lastUpdateTimestamp = block.timestamp;
+        }
+        
         emit ReserveDataUpdated(
             tokenAddress,
             liquidityRate,
