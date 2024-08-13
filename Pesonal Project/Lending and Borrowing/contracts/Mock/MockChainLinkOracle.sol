@@ -15,35 +15,47 @@ contract MockChainlinkOracle is AggregatorV3Interface {
     }
 
     // Implement all required methods from AggregatorV3Interface
-    function latestRoundData() external view override returns (
-        uint80 roundId,
-        int256 price,
-        uint256 startedAt,
-        uint256 updatedAt,
-        uint80 answeredInRound
-    ) {
+    function latestRoundData()
+        external
+        view
+        override
+        returns (
+            uint80 roundId,
+            int256 price,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        )
+    {
         return (0, _price, 0, 0, 0);
     }
 
-    function getRoundData(uint80 /*_roundId*/) external view override returns (
-        uint80 roundId,
-        int256 price,
-        uint256 startedAt,
-        uint256 updatedAt,
-        uint80 answeredInRound
-    ) {
+    function getRoundData(
+        uint80 /*_roundId*/
+    )
+        external
+        view
+        override
+        returns (
+            uint80 roundId,
+            int256 price,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        )
+    {
         return (0, _price, 0, 0, 0);
     }
 
-    function decimals() external view override returns (uint8) {
+    function decimals() external pure override returns (uint8) {
         return 18; // Return the number of decimals
     }
 
-    function description() external view override returns (string memory) {
+    function description() external pure override returns (string memory) {
         return "Mock Chainlink Oracle";
     }
 
-    function version() external view override returns (uint256) {
+    function version() external pure override returns (uint256) {
         return 1; // Mock version number
     }
 }

@@ -5,8 +5,9 @@ import "contracts/Interface.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@chainlink/contracts/src/v0.8/automation/KeeperCompatible.sol";
 
-contract Borrower {
+contract Borrower is KeeperCompatibleInterface {
     address public admin;
     IPriceOracle public priceOracle;
     ICollateralManager public collateralManager;
@@ -36,10 +37,16 @@ contract Borrower {
     mapping(address => uint256[]) public userLoans;
     mapping(address => RiskParameters) public riskParameters;
 
+    event ContractAddressesSet(
+        address priceOracle,
+        address indexed collateralManager,
+        address indexed lendingPool,
+        address indexed interestRate
+    );
     event ServiceFeeSet(uint256 serviceFee);
     event RiskParametersSet(
         address indexed token,
-        uint256 l,
+        uint256 ltv,
         uint256 liquidationThreshold
     );
     event LoanCreated(
@@ -50,7 +57,12 @@ contract Borrower {
         address[] collateralAddresses
     );
     event LoanRepaid(uint256 loanId, address borrower, uint256 amount);
-    event LoanLiquidated(uint256 loanId, address borrower);
+    event LoanIdRemovedFromBorrower(
+        address indexed user,
+        uint256 indexed loanId
+    );
+    event LoanIdRemovedFromGlobalList(uint256 indexed loanId);
+    event LoanLiquidated(uint256 indexed loanId, address indexed borrower);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can call this function");
@@ -72,6 +84,13 @@ contract Borrower {
         collateralManager = ICollateralManager(_collateralManager);
         lendingPool = ILendingPool(_lendingPool);
         interestRate = IInterestRate(_interestRate);
+
+        emit ContractAddressesSet(
+            _priceOracle,
+            _collateralManager,
+            _lendingPool,
+            _interestRate
+        );
     }
 
     function setServiceFee(uint256 _serviceFee) external onlyAdmin {
@@ -96,22 +115,19 @@ contract Borrower {
         emit RiskParametersSet(token, _ltv, _liquidationThreshold);
     }
 
-    // function getCollateralValueForTokens(address user, address[] memory tokenAddresses) public view returns (uint256) {
-    //     return collateralManager.getCollateralValueForTokens(user, tokenAddresses);
-    // }
-
     function createLoan(
         address tokenAddress,
         uint256 tokenAmount,
         address[] calldata collateralAddresses
-    ) external payable{
+    ) external payable {
         require(
             collateralAddresses.length > 0,
             "Must provide at least one collateral address"
         );
         require(msg.value == serviceFee, "Incorrect service fee amount");
 
-        uint256 totalCollateralValueInUSD = collateralManager.getCollateralValueForTokens(msg.sender, collateralAddresses);
+        uint256 totalCollateralValueInUSD = collateralManager
+            .getCollateralValueForTokens(msg.sender, collateralAddresses);
 
         uint256 maxLoanAmountInUSD = (totalCollateralValueInUSD *
             riskParameters[tokenAddress].ltv) / decimal;
@@ -123,11 +139,7 @@ contract Borrower {
 
         require(
             tokenAmount > 0 && tokenAmount <= maxLoanAmountInTokens,
-            string(
-                abi.encodePacked(
-                    "Loan amount must be greater than zero and less than max loan amount in tokens"
-                )
-            )
+            "Loan amount must be greater than zero and less than max loan amount in tokens"
         );
 
         loanCounter++;
@@ -153,7 +165,7 @@ contract Borrower {
         lendingPool.transferLoan(tokenAddress, msg.sender, tokenAmount);
 
         (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}("");
-        require(feeSuccess, "Transfer of service fee failed");        
+        require(feeSuccess, "Transfer of service fee failed");
 
         interestRate.updateInterestRates(tokenAddress);
 
@@ -188,9 +200,10 @@ contract Borrower {
                 amount
             );
 
-            (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}("");
+            (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}(
+                ""
+            );
             require(feeSuccess, "Transfer of service fee failed");
-
         } else {
             uint256 excessAmount = amount - totalRepayment;
             loan.tokenAmount = 0;
@@ -201,11 +214,17 @@ contract Borrower {
                 amount
             );
 
-            (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}("");
+            (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}(
+                ""
+            );
             require(feeSuccess, "Transfer of service fee failed");
 
             if (excessAmount > 0) {
-                lendingPool.transferExcessAmount(loan.tokenAddress, msg.sender, excessAmount);
+                lendingPool.transferExcessAmount(
+                    loan.tokenAddress,
+                    msg.sender,
+                    excessAmount
+                );
             }
 
             collateralManager.unlockCollaterals(
@@ -228,6 +247,8 @@ contract Borrower {
             if (userLoanIds[i] == loanId) {
                 userLoanIds[i] = userLoanIds[userLoanIds.length - 1];
                 userLoanIds.pop();
+
+                emit LoanIdRemovedFromBorrower(user, loanId);
                 break;
             }
         }
@@ -238,6 +259,8 @@ contract Borrower {
             if (loanIds[i] == loanId) {
                 loanIds[i] = loanIds[loanIds.length - 1];
                 loanIds.pop();
+
+                emit LoanIdRemovedFromGlobalList(loanId);
                 break;
             }
         }
@@ -275,7 +298,7 @@ contract Borrower {
         uint256 tokenPriceInUSD = priceOracle.getAssetPrice(loan.tokenAddress);
 
         (uint256 totalLoanAmount, ) = calculateTotalRepayment(loanId);
-        
+
         uint256 loanAmountInUSD = (totalLoanAmount * tokenPriceInUSD) / 1e18;
         uint256 liquidationThreshold = riskParameters[loan.tokenAddress]
             .liquidationThreshold;
@@ -286,11 +309,11 @@ contract Borrower {
         return healthFactor;
     }
 
-    function getAllLoanIds() external view returns (uint256[] memory) {
+    function getAllLoanIds() public view returns (uint256[] memory) {
         return loanIds;
     }
 
-    function liquidateLoan(uint256 loanId) external {   // Thêm onlyAuthorized
+    function liquidateLoan(uint256 loanId) internal {
         Loan memory loan = loans[loanId];
 
         collateralManager.unlockCollaterals(
@@ -305,10 +328,62 @@ contract Borrower {
                 collateralAddress
             );
 
-            collateralManager.transferCollateral(collateralAddress, collateralAmount);
+            collateralManager.transferCollateral(
+                collateralAddress,
+                collateralAmount
+            );
         }
 
         removeLoanIdFromBorrower(loan.borrower, loanId);
         removeLoanIdFromGlobalList(loanId);
+
+        emit LoanLiquidated(loanId, loan.borrower);
+    }
+
+    function checkUpkeep(
+        bytes calldata /* checkData */
+    )
+        external
+        view
+        override
+        returns (bool upkeepNeeded, bytes memory performData)
+    {
+        uint256[] memory allLoans = getAllLoanIds();
+        uint256 maxLoansToCheck = 5;
+        uint256[] memory unsafeLoans = new uint256[](maxLoansToCheck);
+        uint256 count = 0;
+
+        for (
+            uint256 i = 0;
+            i < allLoans.length && count < maxLoansToCheck;
+            i++
+        ) {
+            uint256 loanId = allLoans[i];
+            uint256 healthFactor = checkHealthFactor(loanId);
+
+            if (healthFactor <= 1) {
+                unsafeLoans[count] = loanId;
+                count++;
+            }
+        }
+
+        if (count > 0) {
+            upkeepNeeded = true;
+            performData = abi.encode(unsafeLoans, count);
+        } else {
+            performData = ""; 
+        }
+    }
+
+    function performUpkeep(bytes calldata performData) external override {
+        (uint256[] memory unsafeLoans, uint256 count) = abi.decode(
+            performData,
+            (uint256[], uint256)
+        );
+
+        for (uint256 i = 0; i < count; i++) {
+            uint256 loanId = unsafeLoans[i];
+            liquidateLoan(loanId);
+        }
     }
 }

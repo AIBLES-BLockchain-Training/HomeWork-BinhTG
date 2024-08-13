@@ -25,6 +25,13 @@ contract LendingPool {
     mapping(address => uint256) public totalSupplied;
     mapping(address => uint256) public totalBorrowed;
 
+    event ContractAddressesUpdated(
+        address priceOracle,
+        address indexed collateralManager,
+        address indexed borrower,
+        address indexed interestRate
+    );
+    event ServiceFeeSet(uint256 serviceFeeBalance);
     event AssetDeposit(
         address indexed lender,
         address tokenAddress,
@@ -40,7 +47,11 @@ contract LendingPool {
         address indexed user,
         uint256 amount
     );
-    event ServiceFeeSet(uint256 serviceFeeBalance);
+    event ExcessAmountTransferred(
+        address indexed tokenAddress,
+        address indexed user,
+        uint256 amount
+    );
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can call this function");
@@ -49,9 +60,7 @@ contract LendingPool {
 
     modifier onlyAuthorizedContracts() {
         require(
-            msg.sender == address(borrower) ||
-            msg.sender == address(collateralManager) ||
-            msg.sender == address(this),
+            msg.sender == address(borrower),
             "Only authorized contracts can call this function"
         );
         _;
@@ -71,6 +80,9 @@ contract LendingPool {
         collateralManager = ICollateralManager(_collateralManager);
         borrower = IBorrower(_borrower);
         interestRate = IInterestRate(_interestRate);
+
+        emit ContractAddressesUpdated(_priceOracle, _collateralManager, _borrower, _interestRate);
+
     }
 
     function getAllowedTokens() public view returns (address[] memory) {
@@ -93,9 +105,6 @@ contract LendingPool {
             "Token is not allowed for deposit"
         );
         require(msg.value == serviceFee, "Incorrect service fee amount");
-        
-        (bool feeSuccess, ) = address(this).call{value: serviceFee}("");
-        require(feeSuccess, "Transfer of service fee failed");
         
         LenderAsset storage lenderAsset = lenderAssets[msg.sender][
             tokenAddress
@@ -151,10 +160,6 @@ contract LendingPool {
         assetBalances[tokenAddress] -= amount;
         totalSupplied[tokenAddress] -= amount;
 
-        (bool feeSuccess, ) = address(this).call{value: serviceFee}("");
-        require(feeSuccess, "Transfer of service fee failed");
-        //updateServiceFee(serviceFee);
-
         IERC20(tokenAddress).transfer(msg.sender, amount);
 
         interestRate.updateInterestRates(tokenAddress);
@@ -204,6 +209,9 @@ contract LendingPool {
 
     function transferExcessAmount(address tokenAddress, address user, uint256 amount) external onlyAuthorizedContracts {
         IERC20(tokenAddress).transfer(user, amount);
+
+        emit ExcessAmountTransferred(tokenAddress, user, amount);
+
     } 
 
     function getCurrentUtilizationRate(
@@ -224,11 +232,6 @@ contract LendingPool {
         serviceFeeBalance -= amount;
         payable(admin).transfer(amount);
     }
-
-    // function updateServiceFee(uint256 amount) public onlyAuthorizedContracts {
-    //     serviceFeeBalance += amount;
-    //     emit ServiceFeeUpdated(serviceFeeBalance);
-    // }
 
     receive() external payable {
         serviceFeeBalance += msg.value;

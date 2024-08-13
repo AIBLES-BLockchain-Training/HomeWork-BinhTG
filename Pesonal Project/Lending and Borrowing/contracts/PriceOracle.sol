@@ -56,5 +56,3 @@ contract PriceOracle {
         return uint256(price);
     }
 }
-// Viết contract mockAggregator implement AggregatorV3Interface
-// 

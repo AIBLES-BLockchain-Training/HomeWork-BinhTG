@@ -6,6 +6,8 @@ import "./LendingPool.sol";
 
 contract Liquidation is KeeperCompatibleInterface {
     address public admin;
+    // address public chainlinkKeepersAddress;
+
     ICollateralManager public collateralManager;
     IBorrower public borrower;
 
@@ -14,6 +16,11 @@ contract Liquidation is KeeperCompatibleInterface {
         _;
     }
 
+    // modifier onlyChainlinkKeepers() {
+    //     require(msg.sender == chainlinkKeepersAddress, "Only Chainlink Keepers can call this function");
+    //     _;
+    // }
+
     function setContractAddresses(
         address _collateralManager,
         address _borrower
@@ -21,6 +28,12 @@ contract Liquidation is KeeperCompatibleInterface {
         collateralManager = ICollateralManager(_collateralManager);
         borrower = IBorrower(_borrower);
     }
+
+    // function setChainLinkKeepersAddresses(
+    //     address _chainlinkKeepersAddress
+    // ) external onlyAdmin {
+    //     chainlinkKeepersAddress = _chainlinkKeepersAddress;
+    // }
 
     function checkUpkeep(
         bytes calldata /* checkData */

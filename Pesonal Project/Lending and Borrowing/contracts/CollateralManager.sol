@@ -23,6 +23,12 @@ contract CollateralManager {
     mapping(address => address[]) public userCollateralAddresses;
     mapping(address => bool) public isTokenAllowed;
 
+    event ContractAddressesUpdated(
+        address indexed priceOracle,
+        address indexed borrower,
+        address indexed lendingPool
+    );
+    event AllowedTokensUpdated(address[] newTokens);
     event CollateralAdded(
         address indexed user,
         address indexed collateralAddress,
@@ -44,7 +50,11 @@ contract CollateralManager {
         bool isLocked
     );
     event ServiceFeeSet(uint256 serviceFee);
-    event CollateralTransferred(address indexed borrower, address indexed collateralAddress, uint256 amount);
+    event CollateralTransferred(
+        address indexed borrower,
+        address indexed collateralAddress,
+        uint256 amount
+    );
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can call this function");
@@ -53,7 +63,7 @@ contract CollateralManager {
 
     modifier onlyAuthorizeContract() {
         require(
-            msg.sender == address(borrower) || msg.sender == address(this),
+            msg.sender == address(borrower),
             "Only authorized contracts can call this function"
         );
         _;
@@ -71,10 +81,15 @@ contract CollateralManager {
         priceOracle = IPriceOracle(_priceOracle);
         borrower = IBorrower(_borrower);
         lendingPool = ILendingPool(_lendingPool);
+
+        emit ContractAddressesUpdated(_priceOracle, _borrower, _lendingPool);
     }
 
     function setAllowedToken(address[] memory tokens) public onlyAdmin {
-        require(tokens.length <= 5 && tokens.length > 0, "You can only set up tp 5 allowed tokens");
+        require(
+            tokens.length <= 5 && tokens.length > 0,
+            "You can only set up tp 5 allowed tokens"
+        );
 
         for (uint256 i = 0; i < allowedTokens.length; i++) {
             isTokenAllowed[tokens[i]] = false;
@@ -84,6 +99,8 @@ contract CollateralManager {
         for (uint256 i = 0; i < tokens.length; i++) {
             isTokenAllowed[tokens[i]] = true;
         }
+
+        emit AllowedTokensUpdated(tokens);
     }
 
     function getAllowedTokens() external view returns (address[] memory) {
@@ -95,7 +112,10 @@ contract CollateralManager {
         emit ServiceFeeSet(serviceFee);
     }
 
-    function addCollateral(address collateralAddress, uint256 amount) external payable {
+    function addCollateral(
+        address collateralAddress,
+        uint256 amount
+    ) external payable {
         Collateral storage collateral = userCollaterals[msg.sender][
             collateralAddress
         ];
@@ -109,12 +129,12 @@ contract CollateralManager {
         if (collateral.amount == 0) {
             userCollateralAddresses[msg.sender].push(collateralAddress);
         }
-        
+
         collateral.amount += amount;
-   
+
         (bool feeSuccess, ) = address(lendingPool).call{value: serviceFee}("");
         require(feeSuccess, "Transfer of service fee failed");
-        
+
         IERC20(collateralAddress).transferFrom(
             msg.sender,
             address(this),
@@ -201,12 +221,12 @@ contract CollateralManager {
         return totalValue;
     }
 
-    function transferCollateral(address collateralAddress, uint256 amount) external onlyAuthorizeContract{
-
+    function transferCollateral(
+        address collateralAddress,
+        uint256 amount
+    ) external onlyAuthorizeContract {
         IERC20(collateralAddress).transfer(address(lendingPool), amount);
 
         emit CollateralTransferred(msg.sender, collateralAddress, amount);
     }
 }
-
-
