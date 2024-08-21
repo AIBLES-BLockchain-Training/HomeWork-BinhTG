@@ -1,0 +1,11 @@
+/* Home.css */
+.home-container {
+    display: flex;                  /* Sử dụng Flexbox để căn giữa theo chiều ngang */
+    justify-content: center;        /* Căn giữa theo chiều ngang */
+    padding-top: 300px;             /* Căn chỉnh theo chiều dọc tùy chỉnh, mặc định là bắt đầu */
+    height: 100vh;                  /* Chiếm toàn bộ chiều cao màn hình */
+    text-align: center;             /* Căn giữa văn bản */
+    font-size: 2rem;                /* Kích thước chữ lớn hơn */
+    font-weight: bold;              /* Làm cho chữ đậm hơn */
+    padding-top: 200px;              /* Tùy chỉnh khoảng cách từ trên xuống dưới, thay đổi giá trị tùy ý */
+}
