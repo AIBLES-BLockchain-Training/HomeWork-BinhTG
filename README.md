@@ -2,6 +2,9 @@
 ## Introduction
 Welcome to **Lending and Borrowing**, a decentralized finance (DeFi) application where users can participate as depositors or borrowers. Depositors provide liquidity to the market to earn passive income, while borrowers can borrow collateralized
 . The platform is designed to manage loans, collateral, and interest rates in a decentralized and transparent system.
+
+👉 **Visit the website at:** [https://lab-fe-1.vercel.app](https://lab-fe-1.vercel.app)
+
 ## Key Features
 - **Price Oracle**: Price feeds and automation through Chainlink ensure data accuracy and reliable execution of contract functions.
 - **Collateral Management**: The platform supports dynamic collateral management with real-time monitoring and liquidation mechanisms.
