@@ -115,6 +115,17 @@ contract Borrower is KeeperCompatibleInterface {
         emit RiskParametersSet(token, _ltv, _liquidationThreshold);
     }
 
+    function transferAdmin(address newAdmin) external onlyAdmin {
+        require(newAdmin != address(0), "Invalid address");
+        admin = newAdmin;
+    }
+
+    function getUserLoanIds(
+        address user
+    ) public view returns (uint256[] memory) {
+        return userLoans[user];
+    }
+
     function createLoan(
         address tokenAddress,
         uint256 tokenAmount,
@@ -124,6 +135,14 @@ contract Borrower is KeeperCompatibleInterface {
             collateralAddresses.length > 0,
             "Must provide at least one collateral address"
         );
+        require(
+            !collateralManager.isCollateralLocked(
+                msg.sender,
+                collateralAddresses
+            ),
+            "Collateral is locked and cannot be reused for a new loan"
+        );
+
         require(msg.value == serviceFee, "Incorrect service fee amount");
 
         uint256 totalCollateralValueInUSD = collateralManager
@@ -371,7 +390,7 @@ contract Borrower is KeeperCompatibleInterface {
             upkeepNeeded = true;
             performData = abi.encode(unsafeLoans, count);
         } else {
-            performData = ""; 
+            performData = "";
         }
     }
 
