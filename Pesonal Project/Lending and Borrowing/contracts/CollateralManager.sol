@@ -103,13 +103,24 @@ contract CollateralManager {
         emit AllowedTokensUpdated(tokens);
     }
 
+    function setServiceFee(uint256 _serviceFee) external onlyAdmin {
+        serviceFee = _serviceFee;
+        emit ServiceFeeSet(serviceFee);
+    }
+
+    function transferAdmin(address newAdmin) external onlyAdmin {
+        require(newAdmin != address(0), "Invalid address");
+        admin = newAdmin;
+    }
+
     function getAllowedTokens() external view returns (address[] memory) {
         return allowedTokens;
     }
 
-    function setServiceFee(uint256 _serviceFee) external onlyAdmin {
-        serviceFee = _serviceFee;
-        emit ServiceFeeSet(serviceFee);
+    function getUserCollateralAddresses(
+        address user
+    ) external view returns (address[] memory) {
+        return userCollateralAddresses[user];
     }
 
     function addCollateral(
@@ -194,6 +205,18 @@ contract CollateralManager {
 
             emit CollateralUnlocked(user, collateralAddress, false);
         }
+    }
+
+    function isCollateralLocked(
+        address user,
+        address[] calldata collaterals
+    ) external view returns (bool) {
+        for (uint256 i = 0; i < collaterals.length; i++) {
+            if (userCollaterals[user][collaterals[i]].isLocked == true) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function getCollateralAmount(
