@@ -25,6 +25,10 @@ interface ICollateralManager {
         address borrower,
         address[] calldata collateralAddresses
     ) external;
+    function isCollateralLocked(
+        address user,
+        address[] calldata collaterals
+    ) external view returns (bool);
     function getCollateralAmount(
         address user,
         address collateralAddress
