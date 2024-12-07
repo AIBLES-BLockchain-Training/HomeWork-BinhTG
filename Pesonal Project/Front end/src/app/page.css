@@ -1,0 +1,52 @@
+/* styles.css */
+.main-container {
+    display: flex; /* Sắp xếp các phần tử con theo chiều ngang */
+    justify-content: space-between; /* Khoảng cách đều giữa các container bên trái và bên phải */
+    padding: 16px; /* Khoảng cách bên trong container chính */
+  }
+  
+  .left-container, .right-container {
+    display: flex;
+    flex-direction: column; /* Sắp xếp các phần tử con theo chiều dọc trong từng container */
+    gap: 16px; /* Khoảng cách giữa các phần tử con */
+  }
+  
+  .left-container {
+    flex: 1; /* Chiếm không gian còn lại bên trái */
+  }
+  
+  .right-container {
+    flex: 1; /* Chiếm không gian còn lại bên phải */
+    /* margin-top: 50px; */
+  }
+  
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 cột đều nhau */
+    gap: 20px; /* Khoảng cách giữa các cột */
+  }
+  
+  .column1, .column2, .column3, .column4 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Khoảng cách giữa các phần tử trong mỗi cột */
+  }
+  
+  .column1, .column2 {
+    grid-column: span 1; /* Mỗi cột chiếm 1 phần trong lưới */
+  }
+  
+  .column3, .column4 {
+    grid-column: span 1; /* Mỗi cột chiếm 1 phần trong lưới */
+  }
+  
+  /* Điều chỉnh khoảng cách giữa các nhóm cột */
+  .grid-container > .column1, .grid-container > .column2 {
+    margin-right: 80px; /* Khoảng cách giữa cột 1 và cột 2 với cột 3 và cột 4 */
+  }
+  
+  .grid-container > .column3, .grid-container > .column4 {
+    margin-left: 80px; /* Khoảng cách giữa cột 3 và cột 4 với cột 1 và cột 2 */
+  }
+  

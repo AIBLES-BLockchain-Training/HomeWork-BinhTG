@@ -1,0 +1,99 @@
+/* Function.css */
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Khoảng cách giữa các phần tử trong form */
+    width: 326px;
+    margin: 0 auto; /* Căn giữa theo chiều ngang */
+    padding: 20px;
+    border: 1px solid #a87ae6;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* Màu nền trắng */
+
+}
+.contract-info h6 {
+    margin: 6px 0; /* Khoảng cách giữa các dòng hiển thị */
+    font-size: 9px; /* Kích thước chữ */
+}
+.collateral-info{
+    margin: 1px 0; /* Khoảng cách giữa các dòng hiển thị */
+}
+.form-container h2 {
+    margin-bottom: 16px; /* Khoảng cách dưới tiêu đề */
+    font-size: 1.5rem; /* Kích thước chữ tiêu đề */
+    color: #333; /* Màu chữ tiêu đề */
+}
+
+.token-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Khoảng cách giữa các phần tử trong token-input */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9; /* Màu nền nhẹ nhàng cho các trường đầu vào */
+}
+
+.token-input label {
+    font-weight: bold;
+    margin-bottom: 4px; /* Khoảng cách dưới nhãn */
+    color: #666; /* Màu chữ nhãn */
+}
+
+.token-input input {
+    width: 100%; /* Chiếm toàn bộ chiều rộng của container */
+    padding: 8px;
+    box-sizing: border-box; /* Bao gồm padding và border trong chiều rộng */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.button-container {
+    display: flex;
+    gap: 4px; /* Khoảng cách giữa các nút */
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #d3bdf0;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem; 
+}
+
+button:hover {
+    background-color: #b079d9;
+}
+
+button.add-token {
+    align-self: flex-start; 
+    background-color: #91a2ee;
+    color: #000;
+}
+
+button.add-token:hover {
+    background-color: #6063f1;
+}
+
+button.remove-token {
+    background-color: #f5a9a9;
+    color: #000;
+}
+
+button.remove-token:hover {
+    background-color: #f28a8a;
+}
+
+button.submit-token {
+    margin-top: 4px; 
+}
+
+
+
+
+
+
